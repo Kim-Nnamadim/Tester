@@ -1,37 +1,26 @@
 version: 2.1
 
-executors:
-  linux:
-    docker:
-      - image: cimg/base:2022.03
-  macos:
-    macos:
-      xcode: 12.5.1
-
-orbs:
-  node: circleci/node@5.0.0
-
 jobs:
-  test:
-    parameters:
-      os:
-        type: executor
-      node-version:
-        type: string
-    executor: << parameters.os >>
+  build:
+    docker: 
+      - image: cimg/base:2022.03
     steps:
       - checkout
-      - node/install:
-          node-version: << parameters.node-version >>
-          install-yarn: true
       - run:
-          command: echo "running matrix job for << parameters.os >> << parameters.node-version >>"
+          #name: "'run' statements can actually contain a 'name' and 'command' argument as well"
+          command: | 
+            echo "You can even have multiline commands."
+      - restore_cache:
+          keys:
+          - v1-dependencies-
+      - run: mkdir ~/cache/
+      - run: echo "testfile" > ~/cache/log.txt
+      - save_cache:
+          key: v1-dependencies-
+          paths: 
+           - /cache
 
 workflows:
-  all-tests:
-    jobs:
-      - test:
-          matrix:
-            parameters:
-                node-version: ["12.9.1" , "13.9.0" , "14.18.2" ,"16.13.1"]
-                platform: ["macos", "linux"]
+  build-workflow:
+    jobs: 
+    - build
