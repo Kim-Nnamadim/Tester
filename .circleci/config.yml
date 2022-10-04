@@ -1,40 +1,37 @@
 version: 2.1
 
+executors:
+  linux:
+    docker:
+      - image: cimg/base:2022.03
+  macos:
+    macos:
+      xcode: 12.5.1
+
+orbs:
+  node: circleci/node@5.0.0
+
 jobs:
-  build:
-    docker:
-      - image: cimg/base:2022.03
-    steps:
-      - checkout
-      - run: echo "Building complete"
   test:
-    docker:
-      - image: cimg/base:2022.03
+    parameters:
+      os:
+        type: executor
+      node-version:
+        type: string
+    executor: << parameters.os >>
     steps:
       - checkout
-      - run: echo "Testing complete"
-  deploy:
-    docker:
-      - image: cimg/base:2022.03
-    steps:
-      - checkout
-      - run: echo "Deploy complete"
+      - node/install:
+          node-version: << parameters.node-version >>
+          install-yarn: true
+      - run:
+          command: echo "running matrix job for << parameters.os >> << parameters.node-version >>"
 
 workflows:
-  build-test-and-deploy:
+  all-tests:
     jobs:
-      - build
       - test:
-          requires:
-            - build
-      - deploy:
-          requires:
-            - test
-          filters:
-            tags:
-              only: 
-                - beta-main-0.1.1 
-                - beta-secondary-0.1.1
-              ignore: 
-                - alpha-main-0.1.1
-                - alpha-secondary-1.0.0
+          matrix:
+            parameters:
+                node-version: ["12.9.1" , "13.9.0" , "14.18.2" ,"16.13.1"]
+                platform: ["macos", "linux"]
