@@ -15,6 +15,8 @@ jobs:
 # Add below this line, do not modify above
       - store_test_results:
           path: test-results
+      - store_artifacts:
+          path: /tmp/artifact-1
 # Add above this line, do not modify below
 
 workflows:
