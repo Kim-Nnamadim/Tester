@@ -7,7 +7,7 @@ jobs:
     steps:
       - checkout
       - run: echo "Building complete"
-  test-production:
+  test:
     docker:
       - image: cimg/base:2022.03
     steps:
@@ -24,13 +24,17 @@ workflows:
   build-test-and-deploy:
     jobs:
       - build
-      - test-production:
+      - test:
           requires:
             - build
       - deploy:
           requires:
-            - test-production
+            - test
           filters:
-              branches:
-                only:
-                  - production
+            tags:
+              only: 
+                - beta-main-0.1.1 
+                - beta-secondary-0.1.1
+              ignore: 
+                - alpha-main-0.1.1
+                - alpha-secondary-1.0.0
