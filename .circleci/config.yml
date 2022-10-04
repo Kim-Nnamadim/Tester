@@ -37,10 +37,13 @@ workflows:
             - build
       - test-node-16:
           requires:
-            - test-node
+            - build
       - test-node-14:
           requires:
-            - test-node-16
+            - build
       - deploy:
           requires:
+            - build
+            - test-node
+            - test-node-16
             - test-node-14
