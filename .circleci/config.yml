@@ -1,37 +1,22 @@
 version: 2.1
 
-executors:
-  linux:
-    docker:
-      - image: cimg/base:2022.03
-  macos:
-    macos:
-      xcode: 12.5.1
-
-orbs:
-  node: circleci/node@5.0.0
-
 jobs:
   test:
-    parameters:
-      os:
-        type: executor
-      node-version:
-        type: string
-    executor: << parameters.os >>
+    docker:
+      - image: cimg/base:2022.03
+    parallelism: 2
     steps:
       - checkout
-      - node/install:
-          node-version: << parameters.node-version >>
-          install-yarn: true
+      # These two tests should run in parallel. Make it so!
       - run:
-          command: echo "running matrix job for << parameters.os >> << parameters.node-version >>"
-
+          name: Run Hello test
+          command: |
+            bash src/test_hello.sh
+      - run:
+          name: Run Goodbye test
+          command: |
+            bash src/test_goodbye.sh
 workflows:
-  all-tests:
+  test-workflow:
     jobs:
-      - test:
-          matrix:
-            parameters:
-                node-version: ["12.9.1" , "13.9.0" , "14.18.2" ,"16.13.1"]
-                platform: ["macos", "linux"]
+      - test
