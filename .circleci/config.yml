@@ -1,22 +1,27 @@
 version: 2.1
 
 jobs:
-  test:
+  build:
     docker:
-      - image: cimg/base:2022.03
-    parallelism: 2
+      - image: cimg/node:12.16
     steps:
       - checkout
-      # These two tests should run in parallel. Make it so!
+      # Uncomment below and set the key to point to the proper file
+      - restore_cache:
+          name: Restore Yarn Package Json Cache
+          keys: 
+            - yarn-packages-{{ checksum "package.json" }}           
       - run:
-          name: Run Hello test
-          command: |
-            bash src/test_hello.sh
-      - run:
-          name: Run Goodbye test
-          command: |
-            bash src/test_goodbye.sh
+          name: Install Dependencies
+          command: yarn install --immutable
+      # Uncomment below and set the key to point to the proper file
+      #- save_cache:
+          #name: Save Yarn Package Json Cache
+          #key: yarn-packages-{{ checksum "package.json" }} 
+          #paths:
+            #- ~/.cache/yarn
+
 workflows:
-  test-workflow:
+  cache-save-and-restore:
     jobs:
-      - test
+      - build
