@@ -1,39 +1,27 @@
 version: 2.1
 
-commands:
-  generatelogs:
-    description: "A command to generate a log file"
-    parameters:
-      path:
-        type: string
-        default: "~/randomfolder"
-    steps:
-      - run: echo "Log file" > <<parameters.path>>/log.txt
-  endMission:
-    description: "Use the parameters of this command to exit this mission with a green build."
-    parameters:
-      exitCode:
-        type: integer
-        default: 1
-    steps:
-      - run: exit <<parameters.exitCode>>
+orbs: 
+  win: circleci/windows@4.1
 
 jobs:
-  build:
-    executor: cing/node:custom-node
+  build-docker:
+    docker:
+      - image: cimg/node:17.2.0
     steps:
-      - run: echo "console.log('complete')" | node
-      - generatelogs
-      - run:
-          name: Check for logs - DO NOT MODIFY
-          command: |
-            if [ ! -f ~/project/log.txt ]; then
-              echo "The log should exist at ~/project/log.txt after running the 'generatelogs' command"
-              exit 1
-            fi
-            - endMission
+      - run: echo "docker image"
+    build-xcode:
+      macos:
+        xcode: 14.0.0
+      steps:
+      - run: echo "Run this MAC Op Sys Job"
+    build-win:
+      executor: win/server-2019
+      steps:
+        -run: Write-Host 'Whats up, Windows'
 
 workflows:
-  build-workflow:
+  build-docker-workflow:
     jobs:
-      - build
+      - build-docker
+      - build-xcode
+      - build-win
