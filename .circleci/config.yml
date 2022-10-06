@@ -4,19 +4,19 @@ orbs:
   win: circleci/windows@4.1.1
 
 jobs:
-  build:
+  build-docker:
     docker:
       - image: cimg/node:17.2.0
     steps:
       - run: echo "docker image"
 
-    build:
+    build-mac:
       macos:
         xcode: 14.0.0
       steps:
-      - run: echo "Run this MAC Op Sys Job"
+      - run: xcodebuild -12.5.1
 
-    build:
+    build-win:
       executor: win/server-2022
       steps:
         -run: Write-Host 'Whats up, Windows'
@@ -24,4 +24,6 @@ jobs:
 workflows:
   build-docker-workflow:
     jobs:
-      - build
+      - build-docker
+      - build-mac
+      - build-win
