@@ -4,7 +4,7 @@ commands:
   generatelogs:
     description: "A command to generate a log file"
     parameters:
-      to:
+      path:
         type: string
         default: "~/randomfolder"
     steps:
@@ -20,7 +20,7 @@ commands:
 
 jobs:
   build:
-    executor: custom-node
+    executor: cing/node:custom-node
     steps:
       - run: echo "console.log('complete')" | node
       - generatelogs
@@ -31,7 +31,7 @@ jobs:
               echo "The log should exist at ~/project/log.txt after running the 'generatelogs' command"
               exit 1
             fi
-    endMission:
+            - endMission
 
 workflows:
   build-workflow:
