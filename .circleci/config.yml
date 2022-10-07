@@ -35,5 +35,5 @@ workflows:
           name: executor-<< parameters.os >>
           matrix:
             parameters:
+                platform: [macos, linux]
                 node-version: ["12.9.1" , "13.9.0" , "14.18.2" ,"16.13.1"]
-                platform: ["macos", "linux"]
