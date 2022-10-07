@@ -32,7 +32,7 @@ workflows:
   all-tests:
     jobs:
       - test:
-          name: executor-<< parameters.os >>
+          #name: executor-<< parameters.os >>
           matrix:
             parameters:
                 os: [macos, linux]
