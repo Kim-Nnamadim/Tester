@@ -25,7 +25,7 @@ jobs:
           node-version: << parameters.node-version >>
           install-yarn: true
       - run:
-          command: echo "running matrix job for << parameters.os >> << parameters.node-version >>"
+          command: echo "running matrix job for << parameters.node-version >>"
 
 workflows:
   all-tests:
