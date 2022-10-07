@@ -1,29 +1,37 @@
 version: 2.1
 
-jobs:
-  build:
+executors:
+  linux:
     docker:
-      - image: cimg/node:12.16
+      - image: cimg/base:2022.03
+  macos:
+    macos:
+      xcode: 12.5.1
+
+#orbs:
+  node: circleci/node@5.0.0
+
+jobs:
+  test:
+    parameters:
+      os:
+        type: executor
+      node-version:
+        type: string
+    executor: << parameters.os >>
     steps:
       - checkout
-      # Uncomment below and set the key to point to the proper file
-      - restore_cache:
-          name: Restore Yarn Package Json Cache
-          keys: 
-            - yarn-packages-{{ .Branch }}-{{ checksum "package.json" }}
-            - yarn-packages-{{ .Branch }}
-            - yarn-packages           
+      - node/install:
+          node-version: << parameters.node-version >>
+          install-yarn: true
       - run:
-          name: Install Dependencies
-          command: yarn install --immutable
-      # Uncomment below and set the key to point to the proper file
-      - save_cache:
-          name: Save Yarn Package Json Cache
-          key: yarn-packages-{{ arch }}-{{ .Branch }}-{{ checksum "package.json" }}
-          paths:
-            - ~/.cache/yarn
+          command: echo "running matrix job for << parameters.os >> << parameters.node-version >>"
 
 workflows:
-  cache-save-and-restore:
+  all-tests:
     jobs:
-      - build
+      - test:
+          matrix:
+            parameters:
+                node-version: ["12.9.1" , "13.9.0" , "14.18.2" ,"16.13.1"]
+                platform: ["macos", "linux"]
