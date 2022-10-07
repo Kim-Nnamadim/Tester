@@ -1,31 +1,29 @@
 version: 2.1
 
-parameters:
-  run_by_api:
-    type: boolean
-    default: false
-
 jobs:
-  regular:
+  build:
     docker:
-      - image: cimg/base:2022.03
+      - image: cimg/node:12.16
     steps:
       - checkout
-      - run: echo "I was run normally"
-
-  api-job:
-    docker:
-      - image: cimg/base:2022.03
-    steps:
-      - checkout
-      - run: echo "I was run by API"
+      # Uncomment below and set the key to point to the proper file
+      - restore_cache:
+          name: Restore Yarn Package Json Cache
+          keys: 
+            - yarn-packages-{{ arch }}-{{ .Branch }}-{{ checksum "package.json" }}
+            - yarn-packages-{{ arch }}-{{ .Branch }}
+            - yarn-packages           
+      - run:
+          name: Install Dependencies
+          command: yarn install --immutable
+      # Uncomment below and set the key to point to the proper file
+      - save_cache:
+          name: Save Yarn Package Json Cache
+          key: yarn-packages-{{ arch }}-{{ .Branch }}-{{ checksum "package.json" }}
+          paths:
+            - ~/.cache/yarn
 
 workflows:
-  normal:
+  cache-save-and-restore:
     jobs:
-      - regular
-
-  api-workflow:
-    when: << pipeline.parameters.run_by_api >> # Without modifying the config, run api-job
-    jobs:
-      - api-job
+      - build
