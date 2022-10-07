@@ -18,8 +18,7 @@ jobs:
         type: executor
       node-version:
         type: string
-    executor: 
-      name: << parameters.os >>
+    executor: << parameters.os >>
     steps:
       - checkout
       - node/install:
@@ -32,7 +31,7 @@ workflows:
   all-tests:
     jobs:
       - test:
-          #name: executor-<< parameters.os >>
+          name: executor-<< parameters.os >>
           matrix:
             parameters:
                 os: [macos, linux]
