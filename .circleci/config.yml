@@ -10,8 +10,8 @@ jobs:
       - restore_cache:
           name: Restore Yarn Package Json Cache
           keys: 
-            - yarn-packages-{{ arch }}-{{ .Branch }}-{{ checksum "package.json" }}
-            - yarn-packages-{{ arch }}-{{ .Branch }}
+            - yarn-packages-{{ .Branch }}-{{ checksum "package.json" }}
+            - yarn-packages-{{ .Branch }}
             - yarn-packages           
       - run:
           name: Install Dependencies
