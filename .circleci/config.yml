@@ -14,9 +14,6 @@ jobs:
       - when:
           condition:
             or:
-            #- << pipeline.parameters >>
-            #- equal: [ master, <<pipeline.git.branch >> ]
-              #- << Tester.parameters >>
               - equal: [ main, << pipeline.git.branch >> ]
           steps:
             - run: echo "I am on main"
@@ -38,6 +35,6 @@ conditional-workflow:
       condition:
        and:
         - << pipeline.parameters >>
-        - equal: [ master, << pipeline.parameters.my-parameter >> ]
+        - equal: [ main, << pipeline.parameters >> ]
     jobs:
       - conditional-job
