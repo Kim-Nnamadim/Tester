@@ -17,7 +17,7 @@ jobs:
             #- << pipeline.parameters >>
             #- equal: [ master, <<pipeline.git.branch >> ]
               #- << Tester.parameters >>
-              - equal: [main, << Tester.git.main >>]
+              - equal: [ main , << Tester.git.main >> ]
           steps:
             - run: echo "I am on main"
 
