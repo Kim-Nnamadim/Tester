@@ -14,10 +14,10 @@ jobs:
       - when:
           condition:
             or:
-            - << pipeline.parameters >>
-            - equal: [ master, <<pipeline.git.branch >> ]
-              #- << Tester.parameters.run-deploy >>
-              #- equal: [main, << Tester.git.main >>]
+            #- << pipeline.parameters >>
+            #- equal: [ master, <<pipeline.git.branch >> ]
+              - << Tester.parameters.run-deploy >>
+              - equal: [main, << Tester.git.main >>]
           steps:
             - run: echo "I am on main"
 
