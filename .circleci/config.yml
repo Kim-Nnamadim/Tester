@@ -14,13 +14,15 @@ jobs:
     machine:
       image: ubuntu-2204:2022.10.2
     steps:
-      - run: Write-Host "Windows"
+      - checkout
+      - run: sudo apt-get update
   
   build-mac:
     macos:
       xcode: 14.0.1
     steps:
-      - run: xcodebuild -14.0.1
+      - checkout
+      - run: echo "Hello MacOS"
   
   build-win:
     executor: win/server-2022
