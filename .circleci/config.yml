@@ -1,38 +1,69 @@
 version: 2.1
 
-orbs:
-  win: circleci/windows@5.0
-
 jobs:
-  build-docker:
+  build-linux:
     docker:
-      - image: cimg/node:17.2.0
+      - image: cimg/base:2022.03
     steps:
-      - run: echo "docker image"
-  
-  build-machine:
-    machine:
-      image: ubuntu-2204:2022.10.2
+        - run: mkdir -p app/linux
+        - run:
+            name: Generate app
+            command: echo app >> app/linux/app.linux
+        - run: cd ~/project/app && pwd && ls
+          # Edit below here
+        - persist_to_workspace: 
+            root: app
+            paths: 
+              - linux/app.linux
+
+  build-windows:
+    docker:
+      - image: cimg/base:2022.03 # use your imagination, using all linux/docker for ease-of-use
     steps:
-      - checkout
-      - run: sudo apt-get update
-  
+        - run: mkdir -p app/windows
+        - run:
+            name: Generate app
+            command: echo app >> app/windows/app.windows
+        - run: cd ~/project/app && pwd && ls
+          # Edit below here
+        - persist_to_workspace: 
+            root: app
+            paths: 
+              - windows/app.windows
+
   build-mac:
-    macos:
-      xcode: 14.0.1
-    steps:
-      - checkout
-      - run: echo "Hello MacOS"
-  
-  build-win:
-    executor: win/server-2022
-    steps:
-      - run: Write-Host 'Hello, Windows'
+      docker:
+        - image: cimg/base:2022.03 # use your imagination, using all linux/docker for ease-of-use
+      steps:
+        - run: mkdir -p app/mac
+        - run:
+            name: Generate app
+            command: echo app >> app/mac/app.mac
+        - run: cd ~/project/app && pwd && ls
+          # Edit below here
+        - persist_to_workspace: 
+            root: app
+            paths: 
+              - mac/app.mac
+
+  deploy:
+      docker:
+        - image: cimg/base:2022.03
+      steps:
+        - attach_workspace:
+            at: <location>
+        - store_artifacts: # See circleci.com/docs/2.0/artifacts/ for more details.
+            path: app
+            destination: apps
 
 workflows:
-  build-docker-workflow:
+  build_and_deploy:
     jobs:
-      - build-docker
-      - build-machine
+      - build-linux
       - build-mac
-      - build-win
+      - build-windows
+      - deploy:
+          requires:
+            - build-linux
+            - build-mac
+            - build-windows
