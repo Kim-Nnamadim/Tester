@@ -1,40 +1,36 @@
 version: 2.1
 
-parameters:
-  condition-workflow:
-    type: boolean
-    default: true
+orbs:
+  win: circleci/windows@5.0
 
 jobs:
-  my-job:
+  build-docker:
     docker:
-      - image: cimg/base:2022.03
+      - image: cimg/node:17.2.0
     steps:
-      - checkout
-      - when:
-          condition:
-            or:
-              - equal: [ main, << pipeline.git.branch >> ]
-          steps:
-            - run: echo "I am on main"
-
-  conditional-job:
-    docker:
-      - image: cimg/base:2022.03
+      - run: echo "docker image"
+  
+  build-machine:
+    machine:
+      image: ubuntu-2204:2022.10.2
     steps:
-      - checkout
-      - run: echo "This ran on a pipeline parameter"
+      - run: Write-Host "Windows"
+  
+  build-mac:
+    macos:
+      xcode: 14.0.1
+    steps:
+      - run: xcodebuild -14.0.1
+  
+  build-win:
+    executor: win/server-2022
+    steps:
+      - run: Write-Host 'Hello, Windows'
 
 workflows:
-  my-workflow:
+  build-docker-workflow:
     jobs:
-      - my-job
-
-conditional-workflow:
-    when:
-      condition:
-       and:
-        - << pipeline.parameters >>
-        - equal: [ main, << pipeline.parameters >> ]
-    jobs:
-      - conditional-job
+      - build-docker
+      - build-machine
+      - build-mac
+      - build-win
